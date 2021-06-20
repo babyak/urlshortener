@@ -4,6 +4,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
+RUN apk add --update alpine-sdk && \
+    apk add libffi-dev openssl-dev && \
+    apk add python-dev python3-dev
+
 RUN yarn install
 
 COPY . .
