@@ -1,10 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UrlEntity } from '../models/url.entity'
 import { Repository, Like } from 'typeorm'
 import { Url } from '../models/url.interface'
 import { Observable, from } from 'rxjs'
-import { CreateUrlDTO } from '../controller/create.url.dto'
 import { nanoid } from 'nanoid'
 
 @Injectable()
@@ -16,8 +15,9 @@ export class UrlService {
 
     create(url: Url): Observable<Url> {
       url.code = nanoid(6)
-      console.log(url)
-      return from(this.urlRepository.save(url))
+      return from(
+        this.urlRepository.save(url)
+      )
     }
 
     findByCode(code: string): Observable<Url> {
@@ -46,7 +46,10 @@ export class UrlService {
       }))
     }
 
-    update(id: number, url:Url): Observable<any> {
-      return from(this.urlRepository.update(id, url))
+    addLinkHit(url: Url) {
+      this.urlRepository.createQueryBuilder()
+        .update(url)
+        .set({ hits: () => 'hits + 1' })
+        .execute()
     }
   }

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlModule } from './url/url.module';
+import { UrlService } from './url/service/url.service';
+import { UrlEntity } from './url/models/url.entity';
 
 @Module({
   imports: [
@@ -13,13 +14,14 @@ import { UrlModule } from './url/url.module';
       username: 'root',
       password: 'root',
       database: 'test',
-      entities: ['./build/src/url.models/*entity.js'],
+      entities: ['./dist/url/models/*entity.js'],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([UrlEntity]),
     UrlModule,
   ],
+  providers: [UrlService],
   controllers: [AppController],
-  providers: [AppService],
 })
 
 export class AppModule {}
