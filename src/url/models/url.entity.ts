@@ -1,9 +1,11 @@
+import { getDefaultExpiryDate } from 'src/utils/date'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+
 
 @Entity()
 export class UrlEntity {
 
-  @PrimaryGeneratedColumn ()
+  @PrimaryGeneratedColumn()
   id: number
 
   @Column({ unique:true })
@@ -12,12 +14,12 @@ export class UrlEntity {
   @Column({ unique:true })
   code: string
 
-  @Column()
+  @Column({default: 0})
   hits: number
 
-  @Column()
+  @Column({default: getDefaultExpiryDate()})
   expiry: Date
 
-  @Column()
+  @Column({default: false})
   deleted: boolean
 }
