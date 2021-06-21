@@ -6,6 +6,11 @@ import { Url } from '../models/url.interface'
 import { Observable, from } from 'rxjs'
 import { nanoid } from 'nanoid'
 
+export enum SortBy {
+  hits = 'hits',
+  expiry = 'expiry',
+}
+
 @Injectable()
 export class UrlService {
 
@@ -44,6 +49,17 @@ export class UrlService {
         skip: page,
         take: limit,
       }))
+    }
+
+    findAndCount(page: number, limit: number, sortBy: SortBy, keyword: string): Observable<[Url[], number]> {
+      return from(
+        this.urlRepository.findAndCount({
+          where: { code: Like('%' + keyword + '%') },
+          // order: { `${sortBy}` : "DESC"},
+          take: limit,
+          skip: page
+        })
+      )
     }
 
     addLinkHit(url: Url) {
