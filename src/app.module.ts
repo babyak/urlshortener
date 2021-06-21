@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlModule } from './url/url.module';
 import { UrlService } from './url/service/url.service';
 import { UrlEntity } from './url/models/url.entity';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UrlEntity } from './url/models/url.entity';
     }),
     TypeOrmModule.forFeature([UrlEntity]),
     UrlModule,
+    AdminModule,
   ],
   providers: [UrlService],
   controllers: [AppController],

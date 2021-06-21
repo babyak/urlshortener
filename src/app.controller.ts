@@ -6,11 +6,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger'
-import { map, switchMap, tap } from 'rxjs/operators'
-import { Url } from './url/models/url.interface'
-import e from 'express'
-import { from, of } from 'rxjs'
+import { map, tap } from 'rxjs/operators'
 
+@ApiTags('url')
 @Controller()
 export class AppController {
 
