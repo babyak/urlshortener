@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { UrlService, SortBy } from 'src/url/service/url.service';
 
 import {
@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger'
 import { Observable } from 'rxjs';
 import { Url } from 'src/url/models/url.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -17,6 +18,7 @@ export class AdminController {
   @Get()
   @ApiOperation({ summary: 'Returns paginated and filtered list of urls' })
   @ApiResponse({ status: 200, description: 'Redirect' })
+  @UseGuards(AuthGuard('api-key'))
   get(
     @Param('page') page: number,
     @Param('limit') limit: number,
@@ -24,10 +26,5 @@ export class AdminController {
     @Param('sortBy') sortBy: SortBy
   ): Observable<[Url[], number]> {
     return this.urlService.findAndCount(page, limit, sortBy, keyword)
-  }
-
-  @Delete()
-  delete(@Param('id') id: number){
-
   }
 }
