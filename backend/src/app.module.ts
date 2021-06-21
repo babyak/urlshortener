@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlModule } from './url/url.module';
 import { UrlService } from './url/service/url.service';
 import { UrlEntity } from './url/models/url.entity';
 import { ConfigModule } from '@nestjs/config';
+import { BlacklistMiddleware } from './blacklist/blacklist.middleware';
 
 @Module({
   imports: [
@@ -26,4 +27,10 @@ import { ConfigModule } from '@nestjs/config';
   controllers: [AppController],
 })
 
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(BlacklistMiddleware)
+      .forRoutes({ path: 'urls', method: RequestMethod.POST })
+  }
+}
