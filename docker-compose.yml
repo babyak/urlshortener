@@ -1,14 +1,10 @@
-version: '3.7'
+version: '3.8'
 
 services:
-  main:
-    container_name: main
+  backend:
+    container_name: backend
     build:
-      context: .
-      target: builder
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      context: ./backend
     ports:
       - 3000:3000
       - 9229:9229
