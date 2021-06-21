@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger'
 import { map, tap } from 'rxjs/operators'
 
-@ApiTags('url')
+@ApiTags('Redirect endpoint')
 @Controller()
 export class AppController {
 
@@ -17,6 +17,7 @@ export class AppController {
   @Get(':code')
   @ApiOperation({ summary: 'Redirect short url to original url' })
   @ApiResponse({ status: 302, description: 'Redirect' })
+  @ApiResponse({ status: 410, description: 'Expired or Deleted' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Redirect('google.com', 302)
   get(@Param('code') code: string) {

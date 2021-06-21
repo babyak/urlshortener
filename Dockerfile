@@ -1,16 +1,14 @@
-FROM node:14-alpine As development
+FROM node:14-alpine As builder
 
 WORKDIR /usr/src/app
-
-COPY package*.json ./
 
 RUN apk add --update alpine-sdk && \
     apk add libffi-dev openssl-dev && \
     apk add python-dev python3-dev
 
-RUN yarn install
-
 COPY . .
+
+RUN yarn install
 
 RUN yarn build
 

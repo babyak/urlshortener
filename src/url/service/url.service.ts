@@ -13,7 +13,6 @@ export enum SortBy {
 
 @Injectable()
 export class UrlService {
-
   constructor(
     @InjectRepository(UrlEntity) private readonly urlRepository: Repository<UrlEntity>
     ) {}
@@ -33,21 +32,7 @@ export class UrlService {
 
     findByUrl(url: string): Observable<Url> {
       return from(this.urlRepository.findOne({
-        where: {originalUrl: url}
-      }))
-    }
-
-    findByKeyword( keyword: string ) : Observable<Url[]> {
-      return from(this.urlRepository.find({
-          where: { originalUrl:  Like('%' +  keyword + '%') }
-        }
-      ))
-    }
-
-    findByPageAndLimit(page: number, limit: number): Observable<Url[]> {
-      return from(this.urlRepository.find({
-        skip: page,
-        take: limit,
+        where: {originalUrl: url }
       }))
     }
 
@@ -67,5 +52,13 @@ export class UrlService {
         .update(url)
         .set({ hits: () => 'hits + 1' })
         .execute()
+    }
+
+    delete(id: number) {
+      return this.urlRepository.createQueryBuilder()
+        .update()
+        .set({deleted: true})
+        .where("id = :id", { id })
+        .execute
     }
   }

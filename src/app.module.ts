@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlModule } from './url/url.module';
 import { UrlService } from './url/service/url.service';
 import { UrlEntity } from './url/models/url.entity';
-import { AdminModule } from './admin/admin.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -18,9 +18,9 @@ import { AdminModule } from './admin/admin.module';
       entities: ['./dist/url/models/*entity.js'],
       synchronize: true,
     }),
+    ConfigModule.forRoot(),
     TypeOrmModule.forFeature([UrlEntity]),
     UrlModule,
-    AdminModule,
   ],
   providers: [UrlService],
   controllers: [AppController],

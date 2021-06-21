@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import Strategy from 'passport-headerapikey';
+import HeaderStrategy from 'passport-headerapikey';
 
 @Injectable()
-export class HeaderApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
+export class HeaderApiKeyStrategy extends PassportStrategy(HeaderStrategy, 'Api-Key') {
     constructor(
         private readonly configService: ConfigService
     ) {
