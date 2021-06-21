@@ -28,7 +28,7 @@ export class UrlController {
     return from(this.urlService.findByUrl(url.originalUrl).pipe(
       switchMap((existingUrl: Url) => {
         if(existingUrl) {
-          return of(existingUrl)
+          return this.urlService.updateUrlExpiry(url)
         }
         return this.urlService.create(url)
       }))

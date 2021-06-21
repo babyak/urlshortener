@@ -5,6 +5,7 @@ import { Repository, Like } from 'typeorm'
 import { Url } from '../models/url.interface'
 import { Observable, from } from 'rxjs'
 import { nanoid } from 'nanoid'
+import { getDefaultExpiryDate } from 'src/utils/date'
 
 export enum SortBy {
   hits = 'hits',
@@ -59,6 +60,11 @@ export class UrlService {
         .update()
         .set({deleted: true})
         .where("id = :id", { id })
-        .execute
+        .execute()
+    }
+
+    updateUrlExpiry(url: Url) : Observable<Url> {
+      let newExpiryDate = url.expiry ? url.expiry : getDefaultExpiryDate()
+      return from(this.urlRepository.save({id: url.id, expiry: newExpiryDate}))
     }
   }

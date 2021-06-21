@@ -2,7 +2,7 @@
 import { IsString, IsDate, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger'
 import { Url } from '../models/url.interface';
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 
 export class CreateUrlDTO implements Url {
 
@@ -12,17 +12,19 @@ export class CreateUrlDTO implements Url {
   @Exclude()
   hits: number;
 
+  @Exclude()
+  readonly code: string
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @IsUrl()
   readonly originalUrl: string
 
-  @Exclude()
-  readonly code: string
 
   @ApiProperty()
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
-  readonly expiry: Date
+  readonly expiry?: Date
 }
