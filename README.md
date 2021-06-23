@@ -19,7 +19,7 @@ API Swagger Docs: [http://localhost:3000/swagger](http://localhost:3000/swagger)
 Application consist of backend Nestjs Application, frontend React Application, Postgresql and Redis Databases
 
 ### Backend
-Backend is build with popular Nestjs framework source codes can be found in `/backend` directory
+Nestjs API source codes can be found in `/backend` directory
 
 Folder structure:
 - `/backend/src/url` - contains application logic controller, service and model 
