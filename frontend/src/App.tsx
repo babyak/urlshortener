@@ -1,26 +1,122 @@
-import React from 'react';
+import 'date-fns';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Button, Grid, TextField, Typography } from '@material-ui/core';
 
-function App() {
+
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+
+interface UrlFormData {
+  originalUrl: string,
+  expiry: Date
+}
+
+const defaultExpiry = () : Date => {
+  let tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() +1)
+  return tomorrow
+}
+
+const initialFormState : UrlFormData = {
+  originalUrl : 'rabbitfinance.com',
+  expiry : defaultExpiry()
+}
+
+const SCHEME = 'http'
+const HOST = 'localhost'
+const PORT = '3000'
+
+const App: React.FC = () => {
+  const [originalUrl, setUrl] = useState(initialFormState.originalUrl)
+  const [expiry, setExpiry] = useState(initialFormState.expiry)
+  const [submitted, setSubmitted] = useState(false)
+  const [code, setCode] = useState('')
+
+  const handleSubmitUrl = async (event: any) => {
+    event.preventDefault()
+    const response = await fetch(
+      'http://localhost:3000/urls', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          originalUrl,
+          expiry,
+        })
+      }
+    )
+    const content = await response.json();
+    setCode(content.code)
+    setSubmitted(true)
+
+  }
+
+  const handleUrlChange = (event: any) => {
+    console.log(event.target)
+    setUrl(event.target.value)
+  }
+
+  const handleExpiryChange = (data: any) => {
+    setExpiry(data)
+  }
+
+  const renderForm = () => {
+    return (
+
+      <form id="shortener-form" onSubmit={handleSubmitUrl}>
+        <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <TextField name="originalUrl" label="Outlined" variant="outlined" value={originalUrl} onChange={handleUrlChange}/>
+        </Grid>
+        <Grid item xs={12}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            margin="normal"
+            id="Expiry Date"
+            name="expiry"
+            label="Date picker dialog"
+            format="MM/dd/yyyy"
+            value={expiry}
+            onChange={handleExpiryChange}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+        </MuiPickersUtilsProvider>
+        </Grid>
+        <Grid  item xs={12}>
+          <Button size="large" type="submit" variant="outlined" color="primary">Shorten Url</Button>
+        </Grid>
+        </Grid>
+      </form>
+
+    )
+  }
+
+  const renderShortUrl = () => {
+    const shortUrl = `${SCHEME}://${HOST}:${PORT}/${code}`
+    return (
+      <>
+        <Typography variant="h3" gutterBottom>Your Short url is: </Typography>
+        <Typography variant="h4" gutterBottom>
+          <a href={shortUrl}>{shortUrl}</a>
+        </Typography>
+      </>
+    )
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {submitted ? renderShortUrl() : renderForm()}
       </header>
     </div>
-  );
+  )
 }
 
 export default App;
