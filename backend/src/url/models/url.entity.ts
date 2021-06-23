@@ -3,7 +3,7 @@ import { getDefaultExpiryDate } from 'src/utils/date'
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { nanoid } from 'nanoid'
 import { Type } from 'class-transformer'
-
+import { normalizeUrl } from '../../utils/normalizeUrl'
 @Entity()
 export class UrlEntity {
 
@@ -34,5 +34,10 @@ export class UrlEntity {
   @BeforeInsert()
   async generateShortUrl() {
     return this.code = nanoid(6)
+  }
+
+  @BeforeInsert()
+  async normalizeUrl() {
+    return this.originalUrl = normalizeUrl(this.originalUrl)
   }
 }

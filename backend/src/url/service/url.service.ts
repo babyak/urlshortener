@@ -8,6 +8,7 @@ import { getDefaultExpiryDate } from 'src/utils/date'
 import { SearchUrlDTO } from '../controller/searchquery.dto'
 import { CreateUrlDTO } from '../controller/create.url.dto'
 import { plainToClass } from 'class-transformer'
+import { normalizeUrl } from 'src/utils/normalizeUrl'
 
 export enum SortBy {
   hits = 'hits',
@@ -43,7 +44,7 @@ export class UrlService {
 
     findByUrl(url: string): Observable<Url> {
       return from(this.urlRepository.findOne({
-        where: {originalUrl: url }
+        where: {originalUrl: normalizeUrl(url) }
       }))
     }
 
@@ -69,8 +70,9 @@ export class UrlService {
 
     addLinkHit(url: Url) : void {
       this.urlRepository.createQueryBuilder()
-        .update(url)
+        .update()
         .set({ hits: () => 'hits + 1' })
+        .where("id = :id", { id: url.id })
         .execute()
     }
 
