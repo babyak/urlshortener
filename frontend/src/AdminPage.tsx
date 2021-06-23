@@ -13,6 +13,7 @@ const fetchJson = (url: string, options: any = {}) => {
   return fetchUtils.fetchJson(url, options);
 }
 
+//@TODO move hostname to config file
 const dataProvider = jsonServerProvider('http://localhost:3000', fetchJson);
 
 const UrlFilter = (props: any) => (

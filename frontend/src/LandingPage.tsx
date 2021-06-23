@@ -33,6 +33,8 @@ const LandingPage: React.FC = () => {
   const [expiry, setExpiry] = useState(initialFormState.expiry)
   const [submitted, setSubmitted] = useState(false)
   const [code, setCode] = useState('')
+  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState()
 
   const handleSubmitUrl = async (event: any) => {
     event.preventDefault()
@@ -47,11 +49,22 @@ const LandingPage: React.FC = () => {
           originalUrl,
           expiry,
         })
-      }
-    )
-    const content = await response.json();
-    setCode(content.code)
-    setSubmitted(true)
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson)
+        if (responseJson.error) {
+          setError(true)
+          setErrorMessage(responseJson.message[0])
+          return
+        }
+        setCode(responseJson.code)
+        setSubmitted(true)
+    })
+    .catch((error) => {
+      setSubmitted(false)
+    })
+
   }
 
   const handleUrlChange = (event: any) => {
@@ -68,7 +81,15 @@ const LandingPage: React.FC = () => {
       <form id="shortener-form" onSubmit={handleSubmitUrl}>
         <Grid container spacing={1}>
         <Grid item xs={12}>
-          <TextField label="Original url" fullWidth={true} name="originalUrl" value={originalUrl} onChange={handleUrlChange}/>
+          <TextField
+            label="Original url"
+            fullWidth={true}
+            name="originalUrl"
+            value={originalUrl}
+            onChange={handleUrlChange}
+            error={error ? true : false}
+            helperText={errorMessage}
+          />
         </Grid>
         <Grid item xs={12}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
