@@ -8,6 +8,9 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
+            <LandingPage />
+          </Route>
+          <Route exact path="/admin">
             <AdminPage />
           </Route>
         </Switch>

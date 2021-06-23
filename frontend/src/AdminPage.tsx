@@ -1,22 +1,22 @@
-import 'date-fns';
-import React, { useState } from 'react';
-import { Admin, Resource, ListGuesser } from 'react-admin';
+import { Admin, Resource, ListGuesser, fetchUtils } from 'react-admin';
 import jsonServerProvider from 'ra-data-json-server';
-import LandingPage from './LandingPage';
-import { Route } from 'react-router-dom';
 
-const SCHEME = 'http'
-const HOST = 'localhost'
-const PORT = '3000'
+const API_KEY = '48debf4d-b5b4-4c9d-98ab-7e2494228538'
 
-const dataProvider = jsonServerProvider('http://localhost:3000');
+const fetchJson = (url: string, options: any = {}) => {
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: 'application/json' })
+  }
 
-const customRoutes  = [
-  <Route exact path="/public" component={LandingPage} />,
-];
+  options.headers.set('x-api-key', API_KEY)
+
+  return fetchUtils.fetchJson(url, options);
+}
+
+const dataProvider = jsonServerProvider('http://localhost:3000', fetchJson);
 
 const AdminPage = () => (
-  <Admin customRoutes={customRoutes} dataProvider={dataProvider}>
+  <Admin dataProvider={dataProvider}>
     <Resource name="urls" list={ListGuesser} />
   </Admin>
 )

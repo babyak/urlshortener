@@ -65,11 +65,10 @@ const LandingPage: React.FC = () => {
 
   const renderForm = () => {
     return (
-
       <form id="shortener-form" onSubmit={handleSubmitUrl}>
         <Grid container spacing={1}>
         <Grid item xs={12}>
-          <TextField name="originalUrl" label="Outlined" variant="outlined" value={originalUrl} onChange={handleUrlChange}/>
+          <TextField fullWidth={true} name="originalUrl" value={originalUrl} onChange={handleUrlChange}/>
         </Grid>
         <Grid item xs={12}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -77,10 +76,11 @@ const LandingPage: React.FC = () => {
             margin="normal"
             id="Expiry Date"
             name="expiry"
-            label="Date picker dialog"
+            label="Short link expiration date"
             format="MM/dd/yyyy"
             value={expiry}
             onChange={handleExpiryChange}
+            fullWidth={true}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
@@ -111,7 +111,6 @@ const LandingPage: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         {submitted ? renderShortUrl() : renderForm()}
       </header>
     </div>

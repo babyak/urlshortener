@@ -1,4 +1,4 @@
-import { Body, CACHE_MANAGER, Controller, Delete, Get, GoneException, Inject, NotFoundException, Param, Post, Query, Redirect, UsePipes, ValidationPipe, Response } from '@nestjs/common'
+import { Body, CACHE_MANAGER, Controller, Delete, Get, GoneException, Inject, NotFoundException, Param, Post, Query, Redirect, UsePipes, ValidationPipe, Response, UseGuards } from '@nestjs/common'
 import { from, Observable, of } from 'rxjs'
 import { Url } from '../models/url.interface'
 import { SortOrder, SortBy, UrlService } from '../service/url.service'
@@ -15,6 +15,7 @@ import {
 } from '@nestjs/swagger'
 import { plainToClass } from 'class-transformer'
 import { UrlEntity } from '../models/url.entity'
+import { AuthGuard } from '@nestjs/passport'
 
 @ApiTags('Urls endpoints')
 @Controller('')
@@ -43,7 +44,7 @@ export class UrlController {
   @ApiOperation({ summary: 'Returns paginated and filtered list of urls' })
   @ApiResponse({ status: 200, description: 'Redirect' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  // @UseGuards(AuthGuard('Api-Key'))
+  @UseGuards(AuthGuard('Api-Key'))
   @ApiQuery({ name: '_end' })
   @ApiQuery({ name: '_start' })
   @ApiQuery({ name: 'keywordUrl', required: false })
@@ -100,7 +101,7 @@ export class UrlController {
   @ApiResponse({ status: 204, description: 'Successful delete' })
   @ApiResponse({ status: 404, description: 'Resource not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  // @UseGuards(AuthGuard('Api-Key'))
+  @UseGuards(AuthGuard('Api-Key'))
   delete(@Param('id') id: number) {
     return this.urlService.delete(id)
   }
