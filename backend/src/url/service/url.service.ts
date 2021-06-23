@@ -85,8 +85,9 @@ export class UrlService {
     updateUrlExpiry(url: Url, expiryDate?: Date) : Observable<Url> {
       const newExpiryDate = expiryDate ? expiryDate : getDefaultExpiryDate()
       this.urlRepository.createQueryBuilder()
-        .update(url)
-        .set({ expiry: newExpiryDate })
+        .update()
+        .set({ expiry: newExpiryDate, deleted: false })
+        .where("id = :id", { id: url.id })
         .execute()
 
       return from(this.urlRepository.findOne({where :{ id: url.id}}))

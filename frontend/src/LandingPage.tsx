@@ -68,7 +68,7 @@ const LandingPage: React.FC = () => {
       <form id="shortener-form" onSubmit={handleSubmitUrl}>
         <Grid container spacing={1}>
         <Grid item xs={12}>
-          <TextField fullWidth={true} name="originalUrl" value={originalUrl} onChange={handleUrlChange}/>
+          <TextField label="Original url" fullWidth={true} name="originalUrl" value={originalUrl} onChange={handleUrlChange}/>
         </Grid>
         <Grid item xs={12}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>

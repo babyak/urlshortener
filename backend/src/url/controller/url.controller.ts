@@ -70,7 +70,7 @@ export class UrlController {
     return from(this.cacheManager.get(code)).pipe(
       switchMap((urlFromCacheJSON: string) => {
         const urlFromCache = plainToClass(UrlEntity, JSON.parse(urlFromCacheJSON))
-        if (urlFromCache){
+        if (urlFromCache) {
           return of(urlFromCache)
         }
         return this.urlService.findByCode(code).pipe(
@@ -80,11 +80,12 @@ export class UrlController {
         if (!url) {
           throw new NotFoundException
         }
-        if (url.deleted || url.expiry.getTime() < Date.now()) {
+        if (url.deleted === true || url.expiry.getTime() < Date.now()) {
+          console.log(url)
           throw new GoneException
         }
+        //@todo limit redis url entries and replace popular with less popular urls
         this.cacheManager.set(code, JSON.stringify(url))
-        //@todo limit redis entries and replace popular with less popular urls
         this.urlService.addLinkHit(url)
       }),
       map((url: Url) => {
