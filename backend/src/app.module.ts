@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlModule } from './url/url.module';
 import { UrlService } from './url/service/url.service';
@@ -24,7 +23,6 @@ import { BlacklistMiddleware } from './blacklist/blacklist.middleware';
     UrlModule,
   ],
   providers: [UrlService],
-  controllers: [AppController],
 })
 
 export class AppModule implements NestModule {
