@@ -1,12 +1,12 @@
-import { Body, CACHE_MANAGER, Controller, Delete, Get, GoneException, Inject, NotFoundException, Param, Post, Query, Redirect, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, CACHE_MANAGER, Controller, Delete, Get, GoneException, Inject, NotFoundException, Param, Post, Query, Redirect, UsePipes, ValidationPipe, Response } from '@nestjs/common'
 import { from, Observable, of } from 'rxjs'
 import { Url } from '../models/url.interface'
-import { SortBy, UrlService } from '../service/url.service'
+import { SortOrder, SortBy, UrlService } from '../service/url.service'
 import { CreateUrlDTO } from './create.url.dto'
 import { SearchUrlDTO } from './searchquery.dto'
 import { map, switchMap, tap, } from 'rxjs/operators'
 import { Cache } from 'cache-manager';
-
+import { Response as Res } from 'express';
 import {
   ApiOperation,
   ApiResponse,
@@ -44,15 +44,18 @@ export class UrlController {
   @ApiResponse({ status: 200, description: 'Redirect' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   // @UseGuards(AuthGuard('Api-Key'))
-  @ApiQuery({ name: 'limit' })
-  @ApiQuery({ name: 'page' })
+  @ApiQuery({ name: '_end' })
+  @ApiQuery({ name: '_start' })
   @ApiQuery({ name: 'keywordUrl', required: false })
   @ApiQuery({ name: 'keywordCode', required: false })
-  @ApiQuery({ name: 'sortBy', enum: SortBy, required: false })
-  get(
-    @Query() query?: SearchUrlDTO
-  ): any {
-    return this.urlService.findAndCount(query)
+  @ApiQuery({ name: '_order', enum: SortOrder, required: false })
+  @ApiQuery({ name: '_sort', enum: SortBy, required: false })
+  async get(
+    @Response() res: Res, @Query() query?: SearchUrlDTO
+  ): Promise<any> {
+    const result = await this.urlService.findAndCount(query).toPromise()
+    res.header('Access-Control-Expose-Headers', 'X-Total-Count')
+    return res.set({'X-Total-Count' : result.count}).json(result.urls)
   }
 
   @Get(':code')
@@ -61,8 +64,8 @@ export class UrlController {
   @ApiResponse({ status: 410, description: 'Expired or Deleted' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Redirect('google.com', 302)
-  async getRedirect(@Param('code') code: string) {
-    //@TODO maybe should move cache manger into url service instead having it here in controller
+  getRedirect(@Param('code') code: string) {
+    //@todo move cache manger into url service instead having it here in controller
     return from(this.cacheManager.get(code)).pipe(
       switchMap((urlFromCacheJSON: string) => {
         const urlFromCache = plainToClass(UrlEntity, JSON.parse(urlFromCacheJSON))
@@ -80,6 +83,7 @@ export class UrlController {
           throw new GoneException
         }
         this.cacheManager.set(code, JSON.stringify(url))
+        //@todo limit redis entries and replace popular with less popular urls
         this.urlService.addLinkHit(url)
       }),
       map((url: Url) => {

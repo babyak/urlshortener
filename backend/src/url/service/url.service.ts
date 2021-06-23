@@ -12,7 +12,14 @@ import { plainToClass } from 'class-transformer'
 export enum SortBy {
   hits = 'hits',
   expiry = 'expiry',
-  id = "id"
+  id = 'id',
+  originalUrl = 'originalUrl',
+  code = 'code',
+}
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC'
 }
 
 @Injectable()
@@ -44,12 +51,15 @@ export class UrlService {
       const query = this.urlRepository.createQueryBuilder('url')
         .select(['url.id','url.originalUrl', 'url.code', 'url.expiry', 'url.hits'])
         .where(
-          { originalUrl: Like('%' + searchQuery.keywordUrl + '%') },
-          { code: Like('%' + searchQuery.keywordCode + '%') },
+          "url.deleted = false AND url.originalUrl LIKE :keywordUrl AND url.code LIKE :keywordCode",
+          {
+            keywordUrl: `%${searchQuery.keywordUrl}%`,
+            keywordCode: `%${searchQuery.keywordCode}%`,
+          }
         )
-        .orderBy({ [searchQuery.sortBy] : "DESC"})
-        .skip(searchQuery.page * searchQuery.limit)
-        .take(searchQuery.limit)
+        .orderBy({ [searchQuery._sort] : searchQuery._order})
+        .skip(searchQuery._start)
+        .take(searchQuery._end - searchQuery._start)
 
       return forkJoin({
         count: query.getCount(),

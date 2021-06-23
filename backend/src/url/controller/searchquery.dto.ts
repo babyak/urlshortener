@@ -3,7 +3,7 @@ import { IsString, IsDate, IsNotEmpty, IsUrl, IsOptional, IsInt, IsEnum} from 'c
 import { ApiProperty, ApiQuery } from '@nestjs/swagger'
 import { Url } from '../models/url.interface';
 import { Exclude, Type } from 'class-transformer';
-import { SortBy } from '../service/url.service';
+import { SortBy, SortOrder } from '../service/url.service';
 import { Optional } from '@nestjs/common';
 
 
@@ -12,13 +12,13 @@ export class SearchUrlDTO {
   @IsInt()
   @IsNotEmpty()
   @Type(() => Number)
-  readonly page: number
+  readonly _start: number
 
 
   @IsInt()
   @IsNotEmpty()
   @Type(() => Number)
-  readonly limit: number
+  readonly _end: number
 
   @IsString()
   @Optional()
@@ -34,5 +34,11 @@ export class SearchUrlDTO {
   @Optional()
   @IsOptional()
   @IsEnum(SortBy)
-  readonly sortBy?: SortBy = SortBy.id
+  readonly _sort?: SortBy = SortBy.id
+
+  @IsString()
+  @Optional()
+  @IsOptional()
+  @IsEnum(SortOrder)
+  readonly _order?: SortOrder = SortOrder.ASC
 }
