@@ -23,10 +23,13 @@ services:
       context: ./frontend
     ports:
       - 8088:8088
+      - 9228:9228
     networks:
       - webnet
     depends_on:
       - backend
+    volumes:
+      - "./frontend:/usr/src/app/frontend"
   redis:
     container_name: redis
     image: redis:5
