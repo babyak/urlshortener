@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, GoneException, Header, NotFoundException, Param, Post, Query, Redirect, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, CACHE_MANAGER, Controller, Delete, Get, GoneException, Inject, NotFoundException, Param, Post, Query, Redirect, UsePipes, ValidationPipe } from '@nestjs/common'
 import { from, Observable, of } from 'rxjs'
 import { Url } from '../models/url.interface'
 import { SortBy, UrlService } from '../service/url.service'
 import { CreateUrlDTO } from './create.url.dto'
 import { SearchUrlDTO } from './searchquery.dto'
-import { catchError, map, switchMap, tap, toArray } from 'rxjs/operators'
+import { map, switchMap, tap, } from 'rxjs/operators'
+import { Cache } from 'cache-manager';
 
 import {
   ApiOperation,
@@ -12,12 +13,15 @@ import {
   ApiTags,
   ApiQuery
 } from '@nestjs/swagger'
+import { plainToClass } from 'class-transformer'
+import { UrlEntity } from '../models/url.entity'
 
 @ApiTags('Urls endpoints')
 @Controller('')
 export class UrlController {
 
-  constructor(private urlService: UrlService) {}
+  constructor(private urlService: UrlService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   @Post('urls')
   @UsePipes(ValidationPipe)
@@ -48,7 +52,6 @@ export class UrlController {
   get(
     @Query() query?: SearchUrlDTO
   ): any {
-    console.log(this.urlService.findAndCount(query))
     return this.urlService.findAndCount(query)
   }
 
@@ -58,20 +61,33 @@ export class UrlController {
   @ApiResponse({ status: 410, description: 'Expired or Deleted' })
   @ApiResponse({ status: 404, description: 'Not Found' })
   @Redirect('google.com', 302)
-  getRedirect(@Param('code') code: string) {
-    return this.urlService.findByCode(code).pipe(
-      tap((existingUrl) => {
-        if (!existingUrl) {
+  async getRedirect(@Param('code') code: string) {
+    //@TODO maybe should move cache manger into url service instead having it here in controller
+    return from(this.cacheManager.get(code)).pipe(
+      switchMap((urlFromCacheJSON: string) => {
+        const urlFromCache = plainToClass(UrlEntity, JSON.parse(urlFromCacheJSON))
+        if (urlFromCache){
+          return of(urlFromCache)
+        }
+        return this.urlService.findByCode(code).pipe(
+          map((url: Url) => {
+            return url
+          })
+        )
+      }),
+      tap((url: Url) => {
+        if (!url) {
           throw new NotFoundException
         }
-        if (existingUrl.deleted || existingUrl.expiry.getTime() < Date.now()) {
+        if (url.deleted || url.expiry.getTime() < Date.now()) {
           throw new GoneException
         }
-        this.urlService.addLinkHit(existingUrl)
+        this.cacheManager.set(code, JSON.stringify(url))
+        this.urlService.addLinkHit(url)
       }),
-      map((existingUrl) => {
+      map((url: Url) => {
         return {
-          url: existingUrl.originalUrl,
+          url: url.originalUrl,
           statusCode: 302,
         }
       })

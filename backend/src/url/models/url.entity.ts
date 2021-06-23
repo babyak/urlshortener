@@ -2,6 +2,7 @@ import { url } from 'inspector'
 import { getDefaultExpiryDate } from 'src/utils/date'
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { nanoid } from 'nanoid'
+import { Type } from 'class-transformer'
 
 @Entity()
 export class UrlEntity {
@@ -19,6 +20,7 @@ export class UrlEntity {
   hits: number
 
   @Column()
+  @Type(() => Date)
   expiry: Date
 
   @Column({default: false})
