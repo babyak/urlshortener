@@ -14,6 +14,19 @@ services:
     depends_on:
       - redis
       - postgres
+    volumes:
+      - "./backend:/usr/src/app/backend"
+    working_dir: "/usr/src/app/backend"
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    ports:
+      - 8088:8088
+    networks:
+      - webnet
+    depends_on:
+      - backend
   redis:
     container_name: redis
     image: redis:5

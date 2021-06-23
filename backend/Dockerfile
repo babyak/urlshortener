@@ -4,9 +4,10 @@ WORKDIR /usr/src/app/backend
 
 COPY package.json package.json
 
+RUN yarn install
+
 COPY . .
 
-RUN yarn install
 RUN yarn build
 
 CMD ["yarn", "run", "start:prod"]
