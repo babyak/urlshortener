@@ -4,12 +4,12 @@ import { UrlEntity } from '../models/url.entity'
 import { Repository, Like } from 'typeorm'
 import { Url } from '../models/url.interface'
 import { Observable, from, of, forkJoin } from 'rxjs'
-import { nanoid } from 'nanoid'
 import { getDefaultExpiryDate } from 'src/utils/date'
 import { merge } from 'rxjs/operators'
 import { query } from 'express'
 import { SearchUrlDTO } from '../controller/searchquery.dto'
-
+import { CreateUrlDTO } from '../controller/create.url.dto'
+import { plainToClass } from 'class-transformer'
 
 export enum SortBy {
   hits = 'hits',
@@ -23,8 +23,8 @@ export class UrlService {
     @InjectRepository(UrlEntity) private readonly urlRepository: Repository<UrlEntity>
     ) {}
 
-    create(url: Url): Observable<Url> {
-      url.code = nanoid(6)
+    create(urlDto: CreateUrlDTO): Observable<Url> {
+      const url = plainToClass(UrlEntity, urlDto)
       return from(
         this.urlRepository.save(url)
       )
@@ -59,7 +59,7 @@ export class UrlService {
       })
     }
 
-    addLinkHit(url: Url) {
+    addLinkHit(url: Url) : void {
       this.urlRepository.createQueryBuilder()
         .update(url)
         .set({ hits: () => 'hits + 1' })
