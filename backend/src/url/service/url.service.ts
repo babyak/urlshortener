@@ -42,7 +42,7 @@ export class UrlService {
 
     findAndCount(searchQuery: SearchUrlDTO): Observable<any> {
       const query = this.urlRepository.createQueryBuilder('url')
-        .select(['url.originalUrl', 'url.code', 'url.expiry', 'url.hits'])
+        .select(['url.id','url.originalUrl', 'url.code', 'url.expiry', 'url.hits'])
         .where(
           { originalUrl: Like('%' + searchQuery.keywordUrl + '%') },
           { code: Like('%' + searchQuery.keywordCode + '%') },

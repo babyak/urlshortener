@@ -70,10 +70,7 @@ export class UrlController {
           return of(urlFromCache)
         }
         return this.urlService.findByCode(code).pipe(
-          map((url: Url) => {
-            return url
-          })
-        )
+          map((url: Url) => url))
       }),
       tap((url: Url) => {
         if (!url) {
