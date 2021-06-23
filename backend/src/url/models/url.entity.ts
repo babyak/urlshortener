@@ -8,7 +8,7 @@ export class UrlEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ unique:true })
+  @Column({ unique:true, name: 'originalurl' })
   originalUrl: string
 
   @Column({ unique:true })

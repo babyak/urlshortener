@@ -3,13 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { UrlEntity } from '../models/url.entity'
 import { Repository, Like } from 'typeorm'
 import { Url } from '../models/url.interface'
-import { Observable, from } from 'rxjs'
+import { Observable, from, of, forkJoin } from 'rxjs'
 import { nanoid } from 'nanoid'
 import { getDefaultExpiryDate } from 'src/utils/date'
+import { merge } from 'rxjs/operators'
+import { query } from 'express'
+import { SearchUrlDTO } from '../controller/searchquery.dto'
+
 
 export enum SortBy {
   hits = 'hits',
   expiry = 'expiry',
+  id = "id"
 }
 
 @Injectable()
@@ -37,15 +42,21 @@ export class UrlService {
       }))
     }
 
-    findAndCount(page: number, limit: number, sortBy: SortBy, keyword: string): Observable<[Url[], number]> {
-      return from(
-        this.urlRepository.findAndCount({
-          where: { code: Like('%' + keyword + '%') },
-          // order: { `${sortBy}` : "DESC"},
-          take: limit,
-          skip: page
-        })
-      )
+    findAndCount(searchQuery: SearchUrlDTO): Observable<any> {
+      const query = this.urlRepository.createQueryBuilder('url')
+        .select(['url.originalUrl', 'url.code', 'url.expiry', 'url.hits'])
+        .where(
+          { originalUrl: Like('%' + searchQuery.keywordUrl + '%') },
+          { code: Like('%' + searchQuery.keywordCode + '%') },
+        )
+        .orderBy({ [searchQuery.sortBy] : "DESC"})
+        .skip(searchQuery.page * searchQuery.limit)
+        .take(searchQuery.limit)
+
+      return forkJoin({
+        count: query.getCount(),
+        urls: query.getMany(),
+      })
     }
 
     addLinkHit(url: Url) {
@@ -62,7 +73,7 @@ export class UrlService {
         .where("id = :id", { id })
         .execute()
     }
-q
+
     updateUrlExpiry(url: Url, expiryDate?: Date) : Observable<Url> {
       const newExpiryDate = expiryDate ? expiryDate : getDefaultExpiryDate()
       this.urlRepository.createQueryBuilder()
