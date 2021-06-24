@@ -98,7 +98,7 @@ export class UrlController {
   }
 
   @Delete('urls/:id')
-  @ApiOperation({ summary: 'Create and return short URL' })
+  @ApiOperation({ summary: 'Soft Delete URL by id' })
   @ApiResponse({ status: 204, description: 'Successful delete' })
   @ApiResponse({ status: 404, description: 'Resource not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
