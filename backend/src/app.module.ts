@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlModule } from './url/url.module';
 import { UrlService } from './url/service/url.service';
@@ -24,11 +29,10 @@ import { BlacklistMiddleware } from './blacklist/blacklist.middleware';
   ],
   providers: [UrlService],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(BlacklistMiddleware)
-      .forRoutes({ path: 'urls', method: RequestMethod.POST })
+      .forRoutes({ path: 'urls', method: RequestMethod.POST });
   }
 }

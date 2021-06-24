@@ -4,7 +4,7 @@ import { UrlController } from './controller/url.controller';
 import { UrlEntity } from './models/url.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
-import * as redisStore from 'cache-manager-redis-store'
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -12,11 +12,11 @@ import * as redisStore from 'cache-manager-redis-store'
     AuthModule,
     CacheModule.register({
       store: redisStore,
-      host:'redis',
-      port: 6379
+      host: 'redis',
+      port: 6379,
     }),
   ],
   providers: [UrlService],
-  controllers: [UrlController]
+  controllers: [UrlController],
 })
 export class UrlModule {}
