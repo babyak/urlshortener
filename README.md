@@ -1,8 +1,8 @@
-# URL SHORTENER
+## URL shortener in React & Nest.js using Postgres & Redis
 
-## How to start application
+Implements Backend API in Nest.js for Landing Page UI & Administration management UI for shortened links.
 
-Run this command from root directory
+### Run it locally using docker compose
 
 ```bash
 $ docker-compose build && docker-compose up
@@ -15,10 +15,10 @@ Admin page: [http://localhost:8088/admin](http://localhost:8088/admin)
 API Swagger Docs: [http://localhost:3000/swagger](http://localhost:3000/swagger) 
 
 
-## Structure 
+### Structure 
 Application consist of backend Nestjs Application, frontend React Application, Postgresql and Redis Databases
 
-### Backend
+#### Backend
 Nestjs API source codes can be found in `/backend` directory
 
 Folder structure:
@@ -26,5 +26,8 @@ Folder structure:
 - `/backend/src/auth` - contains application authentication using Header x-api-key
 - `/backend/src/blacklist` - contain middleware to reject blacklisted url using Regexp
 
-### Frontend
+#### Frontend
 Frontend is build with Create React App and React Admin (https://github.com/marmelab/react-admin)
+
+
+_PS: this was an interwiew/excercise homework_
